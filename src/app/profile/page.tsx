@@ -4,9 +4,9 @@ import Header from "@/components/Header"
 import LoadingButton from "@/components/LoadingButton"
 import { useAlert } from "@/providers/AlertContext"
 import { useAuth } from "@/providers/AuthContext"
-import { Home, Paginate } from "@/types/api"
+import { Booking, Home, Paginate } from "@/types/api"
 import api from "@/utils/api"
-import { Box, Button, Flex, Input, Text } from "@chakra-ui/react"
+import { Box, Button, DialogBackdrop, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogPositioner, DialogRoot, Flex, Input, Portal, Text } from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 import Image from "next/image"
@@ -27,18 +27,16 @@ export default function ProfilePage() {
 			if (!user) return await Promise.reject()
 			return (await api.get<Paginate<Home>>(`/homes?user=${user.id}`)).data
 		},
-		staleTime: 5 * 60 * 1000,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
 
-    const { data: bookings, isError: isErrorBookings } = useQuery({
+    const { data: bookings, isError: isErrorBookings, refetch: refetchBookings } = useQuery({
 		queryKey: ["booking", user?.id],
 		queryFn: async () => {
 			if (!user) return await Promise.reject()
-			return (await api.get<Paginate<Home>>(`/bookings`)).data
+			return (await api.get<Booking[]>(`/bookings`)).data
 		},
-		staleTime: 5 * 60 * 1000,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
@@ -49,6 +47,23 @@ export default function ProfilePage() {
     const newPasswordRef = useRef<HTMLInputElement>(null)
     const passwordRef = useRef<HTMLInputElement>(null)
     const birthDateRef = useRef<HTMLInputElement>(null)
+
+    const [loadingDelete, setLoadingDelete] = useState(false)
+    const [deleteBooking, setDeleteBooking] = useState<Booking | undefined>(undefined)
+
+    async function handleDelete() {
+        if (!user || !deleteBooking) return
+        setLoadingDelete(true)
+        try {
+            await api.delete(`/booking/${deleteBooking.id}`)
+            addAlert({ title: "Sucesso!", text: "Reserva cancelada com sucesso!", variant: "success" })
+            refetchBookings()
+        } catch {
+            addAlert({ title: "Erro!", text: "Não foi possível cancelar a reserva." })
+        }
+        setDeleteBooking(undefined)
+        setLoadingDelete(false)
+    }
 
     async function handleSave() {
         if (!user) return
@@ -84,6 +99,26 @@ export default function ProfilePage() {
     }, [addAlert, isError, isErrorBookings])
 
     return <>
+        <DialogRoot open={!!deleteBooking} size="lg">
+            <Portal>
+                <DialogBackdrop />
+                <DialogPositioner mt={4} zIndex={100000000}>
+                    <DialogContent p={4}>
+                        <DialogHeader>
+                            <Text fontWeight={600} fontSize={20}>{deleteBooking?.address}, {deleteBooking?.city}</Text>
+                        </DialogHeader>
+                        <DialogBody py={4} fontSize={16}>
+                            <Text>Deseja mesmo cancelar essa reserva?</Text>
+                            <Text mt={1} fontWeight={600}>Não é possível reverter essa ação.</Text>
+                        </DialogBody>
+                        <DialogFooter>
+                            <Button disabled={loadingDelete} onClick={() => setDeleteBooking(undefined)} px={4} variant="outline">Não</Button>
+                            <LoadingButton loading={loadingDelete} onClick={handleDelete} px={4} bgColor="red.500" _hover={{bgColor: "red.600"}}>Sim</LoadingButton>
+                        </DialogFooter>
+                    </DialogContent>
+                </DialogPositioner>
+            </Portal>
+        </DialogRoot>
         <Header />
         <Box w="90vw" maxW="1600px" m="auto" mt={4}>
             <Text fontSize={20} fontWeight={600}>Olá, {user?.name}!</Text>
@@ -92,14 +127,29 @@ export default function ProfilePage() {
                 <Flex mb={1} gap={2} align="center">
                     <Text fontWeight={600}>Suas reservas</Text>
                 </Flex>
-                <Flex w="15rem" h="15rem" bgColor="gray.200" rounded="lg" shadow="md" gap={4} p={4} justify="center" align="start" flexDir="column">
-                    <Text color="gray.800">Você ainda não fez nenhuma reserva. Que tal fazer uma agora?</Text>
-                    <Link href="/">
-                        <Flex bgColor="blue.500" color="white" p={2} px={4} rounded="sm" align="center" gap={2} transition="all" _hover={{bgColor: "blue.600"}}>
-                            <FaArrowRight />
-                            Descobrir
+                <Flex gap={4} overflowX="auto">
+                    {(bookings && !bookings.length) && (
+                        <Flex w="15rem" h="15rem" bgColor="gray.200" rounded="lg" shadow="md" gap={4} p={4} justify="center" align="start" flexDir="column">
+                            <Text color="gray.800">Você ainda não fez nenhuma reserva. Que tal fazer uma agora?</Text>
+                            <Link href="/">
+                                <Flex bgColor="blue.500" color="white" p={2} px={4} rounded="sm" align="center" gap={2} transition="all" _hover={{bgColor: "blue.600"}}>
+                                    <FaArrowRight />
+                                    Descobrir
+                                </Flex>
+                            </Link>
                         </Flex>
-                    </Link>
+                    )}
+                    {bookings?.map((c) => (
+                        <Flex key={c.id} w="15rem" bgColor="white" rounded="lg" shadow="md" gap={4} justify="center" align="start" flexDir="column">
+                            <Image style={{width: "100%", height: "80%", objectFit: "cover", borderRadius: "inherit"}} width={400} height={400} src={`${process.env.NEXT_PUBLIC_API_URL}/home/picture?path=${encodeURIComponent(c.picture_path)}`} alt="Home picture" />
+                            <Flex w="100%" p={2} flexDir="column" gap={2}>
+                                <Text>{c.from_date.split('-').reverse().join('/')} - {c.to_date.split('-').reverse().join('/')}</Text>
+                                <Text style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>{c.address}, {c.city}</Text>
+                                <Button onClick={() => navigation.push(`/home?id=${c.home_id}`)} px={4} bgColor="blue.500" _hover={{bgColor: "blue.600"}}>Detalhes</Button>
+                                <Button onClick={() => setDeleteBooking(c)} px={4} bgColor="red.500" _hover={{bgColor: "red.600"}}>Cancelar</Button>
+                            </Flex>
+                        </Flex>
+                    ))}
                 </Flex>
             </Box>
             <Box mt={8}>

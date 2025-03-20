@@ -22,7 +22,6 @@ export default function MainPage() {
   const { data, isFetching, isError } = useQuery({
     queryKey: ["homes", page],
     queryFn: async () => (await api.get<Paginate<Home>>("/homes", { params: { page } })).data,
-    staleTime: 5 * 1000 * 60,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   })

@@ -7,7 +7,7 @@ interface Props extends ButtonProps {
 }
 
 export default function LoadingButton({ loading, children, ...props }: Props) {
-    return <Button {...props}>
+    return <Button disabled={loading} {...props}>
         {loading ? <Spinner /> : children}
     </Button>
 }

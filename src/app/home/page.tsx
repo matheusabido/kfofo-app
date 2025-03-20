@@ -33,7 +33,6 @@ function Page() {
 			if (!id) return await Promise.reject()
 			return (await api.get<Home>(`/home/${id}`)).data
 		},
-		staleTime: 5 * 60 * 1000,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
@@ -44,7 +43,6 @@ function Page() {
 			if (!id) return await Promise.reject()
 			return (await api.get<Utensil[]>(`/utensils?home_id=${id}`)).data
 		},
-		staleTime: 5 * 60 * 1000,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
