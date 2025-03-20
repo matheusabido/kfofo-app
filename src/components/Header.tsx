@@ -9,14 +9,14 @@ export default function Header() {
     const { user } = useAuth()
 
     return <Box as={"header"} p={2} bgColor="blue.500">
-        <Flex w="90vw" maxW="1600px" m="auto" justify="space-between" alignItems="center">
+        <Flex w="90vw" maxW="1600px" m="auto" justify="space-between" alignItems="center" flexWrap="wrap">
             <Link href="/">
                 <Flex alignItems="end" gap={1}>
                     <Image style={{filter: "invert()"}} src="/kfofo-logo.png" width={24} height={24} alt="Kfofo logo" />
                     <Text color="white" fontSize={24} fontWeight={600} mb={-2}>fofo</Text>
                 </Flex>
             </Link>
-            <Flex gap={4} color="white" alignItems="center">
+            <Flex gap={4} color="white" alignItems="center" flexWrap="wrap">
                 <Link href="/">Descobrir</Link>
                 {user
                 ?

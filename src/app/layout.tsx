@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Provider } from "@/components/chakra/provider";
-import { AuthProvider } from "@/providers/AuthContext";
-import { AlertProvider } from "@/providers/AlertContext";
+import Providers from "@/providers/Providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,13 +22,9 @@ export default function RootLayout({
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <body style={{...inter.style, display: "flex", flexDirection: "column", paddingBottom: "2rem"}}>
-        <Provider>
-          <AuthProvider>
-            <AlertProvider>
-              {children}
-            </AlertProvider>
-          </AuthProvider>
-        </Provider>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

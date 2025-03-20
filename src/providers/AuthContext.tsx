@@ -26,7 +26,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const id = api.interceptors.response.use((r) => {
             if (r.status === 401) {
-                setUser(undefined)
+                setAndUpdateUser(undefined)
+                return Promise.reject()
             }
             return r
         })
@@ -46,10 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [loading, navigation, path, user])
 
-    function setAndUpdateUser(user: User) {
-        localStorage.setItem("kfofo-user", JSON.stringify(user))
+    function setAndUpdateUser(user?: User) {
+        if (user) localStorage.setItem("kfofo-user", JSON.stringify(user))
+        else localStorage.removeItem("kfofo-user")
+        
         setUser(user)
-        if (user.token) api.interceptors.request.use((r) => {
+        
+        if (user?.token) api.interceptors.request.use((r) => {
             r.headers["Authorization"] = `Bearer ${user.token}`
             return r
         })
