@@ -30,3 +30,8 @@ export type Home = {
     share_type_name: string
     share_type_description: string
 }
+
+export type Utensil = {
+    id: number
+    name: string
+}

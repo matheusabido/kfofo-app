@@ -4,17 +4,33 @@ import Header from "@/components/Header"
 import LoadingButton from "@/components/LoadingButton"
 import { useAlert } from "@/providers/AlertContext"
 import { useAuth } from "@/providers/AuthContext"
+import { Home, Paginate } from "@/types/api"
 import api from "@/utils/api"
-import { Box, Flex, Input, Text } from "@chakra-ui/react"
+import { Box, Button, Flex, Input, Text } from "@chakra-ui/react"
+import { useQuery } from "@tanstack/react-query"
 import { AxiosError } from "axios"
+import Image from "next/image"
 import Link from "next/link"
-import { useRef, useState } from "react"
-import { FaInfoCircle, FaUserAlt } from "react-icons/fa"
-import { FaArrowRight, FaArrowRightLong, FaCakeCandles, FaIdCard, FaLock } from "react-icons/fa6"
+import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { FaInfoCircle, FaPlusCircle, FaUserAlt } from "react-icons/fa"
+import { FaArrowRight, FaCakeCandles, FaIdCard, FaLock } from "react-icons/fa6"
 
 export default function ProfilePage() {
+    const navigation = useRouter()
     const { user, setUser } = useAuth()
     const { addAlert } = useAlert()
+
+    const { data, isError } = useQuery({
+		queryKey: ["home", user?.id],
+		queryFn: async () => {
+			if (!user) return await Promise.reject()
+			return (await api.get<Paginate<Home>>(`/homes?user=${user.id}`)).data
+		},
+		staleTime: 5 * 60 * 1000,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+	})
 
     const [loading, setLoading] = useState(false)
     const nameRef = useRef<HTMLInputElement>(null)
@@ -52,6 +68,10 @@ export default function ProfilePage() {
         setLoading(false)
     }
 
+    useEffect(() => {
+        if (isError) addAlert({ title: "Erro!", text: "Não foi possível buscar as informações." })
+    }, [addAlert, isError])
+
     return <>
         <Header />
         <Box w="90vw" maxW="1600px" m="auto" mt={4}>
@@ -60,7 +80,6 @@ export default function ProfilePage() {
             <Box mt={8}>
                 <Flex mb={1} gap={2} align="center">
                     <Text fontWeight={600}>Suas reservas</Text>
-                    <FaArrowRightLong />
                 </Flex>
                 <Flex w="15rem" h="15rem" bgColor="gray.200" rounded="lg" shadow="md" gap={4} p={4} justify="center" align="start" flexDir="column">
                     <Text color="gray.800">Você ainda não fez nenhuma reserva. Que tal fazer uma agora?</Text>
@@ -75,16 +94,29 @@ export default function ProfilePage() {
             <Box mt={8}>
                 <Flex mb={1} gap={2} align="center">
                     <Text fontWeight={600}>Suas casas</Text>
-                    <FaArrowRightLong />
+                    <FaPlusCircle onClick={() => navigation.push("/home/cadastrar")} cursor="pointer" color="#00aa00" />
                 </Flex>
-                <Flex w="15rem" h="15rem" bgColor="gray.200" rounded="lg" shadow="md" gap={4} p={4} justify="center" align="start" flexDir="column">
-                    <Text color="gray.800">Você ainda não cadastrou nenhuma casa. Que tal cadastrar uma agora?</Text>
-                    <Link href="/">
-                        <Flex bgColor="blue.500" color="white" p={2} px={4} rounded="sm" align="center" gap={2} transition="all" _hover={{bgColor: "blue.600"}}>
-                            <FaArrowRight />
-                            Cadastrar
+                <Flex gap={4} overflowX="auto">
+                    {(data && !data.data?.length) && (
+                        <Flex w="15rem" h="15rem" bgColor="gray.200" rounded="lg" shadow="md" gap={4} p={4} justify="center" align="start" flexDir="column">
+                            <Text color="gray.800">Você ainda não cadastrou nenhuma casa. Que tal cadastrar uma agora?</Text>
+                            <Link href="/">
+                                <Flex bgColor="blue.500" color="white" p={2} px={4} rounded="sm" align="center" gap={2} transition="all" _hover={{bgColor: "blue.600"}}>
+                                    <FaArrowRight />
+                                    Cadastrar
+                                </Flex>
+                            </Link>
                         </Flex>
-                    </Link>
+                    )}
+                    {data?.data.map((c) =>
+                        <Flex key={c.id} w="15rem" bgColor="white" rounded="lg" shadow="md" gap={4} justify="center" align="start" flexDir="column">
+                            <Image style={{width: "100%", height: "80%", objectFit: "cover", borderRadius: "inherit"}} width={400} height={400} src={`${process.env.NEXT_PUBLIC_API_URL}/home/picture?path=${encodeURIComponent(c.picture_path)}`} alt="Home picture" />
+                            <Flex w="100%" p={2} flexDir="column" gap={2}>
+                                <Text style={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>{c.address}, {c.city}</Text>
+                                <Button onClick={() => navigation.push(`/home?id=${c.id}`)} px={4} bgColor="blue.500" _hover={{bgColor: "blue.600"}}>Detalhes</Button>
+                            </Flex>
+                        </Flex>
+                    )}
                 </Flex>
             </Box>
             <Box mt={8} bgColor="gray.100" p={4} rounded="sm" shadow="sm">

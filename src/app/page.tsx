@@ -38,12 +38,12 @@ export default function MainPage() {
       <Text>{page}/{data?.lastPage || 1}</Text>
       <Button disabled={isFetching || page >= (data?.lastPage || -1)} onClick={() => setPage(page + 1)} size="sm" bgColor="blue.500" _hover={{bgColor: "blue.600"}} transition="all"><FaAngleRight /></Button>
     </Flex>
-    <SimpleGrid columns={{ base: 1 }} p={4}>
+    <SimpleGrid w="90vw" maxW="1600px" m="0 auto" gap={4} columns={{ base: 1, md: 2, lg: 3, xl: 4 }} p={4}>
       {(data && !isFetching && !isError)
       ? data.data?.map((c) =>
         <GridItem key={c.id}>
-          <CardRoot maxW="sm" overflow="hidden">
-            <Image style={{width: "100%", objectFit: "cover"}} width={500} height={500} src={`${process.env.NEXT_PUBLIC_API_URL}/home/picture?path=${encodeURIComponent(c.picture_path)}`} alt="Home picture" />
+          <CardRoot m="0 auto" h="100%" maxW="md" overflow="hidden">
+            <Image style={{width: "100%", height: "20rem", objectFit: "cover"}} width={500} height={500} src={`${process.env.NEXT_PUBLIC_API_URL}/home/picture?path=${encodeURIComponent(c.picture_path)}`} alt="Home picture" />
             <CardBody p={2}>
               <Flex align="center">
                 <Text flex={1} overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis" fontWeight="bold">{c.address}</Text>
@@ -63,14 +63,14 @@ export default function MainPage() {
                   <GridItem display="flex" alignItems="center" gap={2}>
                     <MdBlock />
                     <Tooltip content={c.restriction_description} positioning={{offset: {mainAxis: 0}}} openDelay={0} closeDelay={0}>
-                      <Text>{c.restriction_name}</Text>
+                      <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{c.restriction_name}</Text>
                     </Tooltip>
                   </GridItem>
                   <GridItem display="flex" alignItems="center" gap={2}>
-                      <FaPeopleGroup />
-                      <Tooltip content={c.share_type_description} positioning={{offset: {mainAxis: 0}}} openDelay={0} closeDelay={0}>
-                        <Text>{c.share_type_name}</Text>
-                      </Tooltip>
+                    <FaPeopleGroup />
+                    <Tooltip content={c.share_type_description} positioning={{offset: {mainAxis: 0}}} openDelay={0} closeDelay={0}>
+                      <Text overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{c.share_type_name}</Text>
+                    </Tooltip>
                   </GridItem>
                 </SimpleGrid>
               </Flex>

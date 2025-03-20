@@ -14,7 +14,8 @@ type Auth = {
 const AuthContext = createContext<Auth>({setUser: () => {}})
 
 const PROTECTED_ROUTES = [
-    '/profile'
+    '/profile',
+    '/home/cadastrar',
 ]
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -53,7 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         setUser(user)
         
+        api.interceptors.request.clear()
         if (user?.token) api.interceptors.request.use((r) => {
+            console.log(`Bearer ${user.token}`)
             r.headers["Authorization"] = `Bearer ${user.token}`
             return r
         })
