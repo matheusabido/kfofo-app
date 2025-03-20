@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'kfofo-api-production.up.railway.app',
-        port: '80',
+        port: '',
         pathname: '/home/picture'
       }
     ]
