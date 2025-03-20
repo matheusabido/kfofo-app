@@ -35,3 +35,14 @@ export type Utensil = {
     id: number
     name: string
 }
+
+export type Booking = {
+    id: number
+    home_id: number
+    from_date: string
+    to_date: string
+    cost_per_cycle: number
+    address: string
+    city: string
+    picture_path: string
+}

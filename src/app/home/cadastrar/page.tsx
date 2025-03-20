@@ -36,16 +36,41 @@ export default function CadastrarHome() {
             addAlert({ title: "Erro!", text: "A foto é obrigatória." })
             return
         }
+        if (!addressRef.current?.value) {
+            addAlert({ title: "Erro!", text: "O endereço é obrigatório." })
+            return
+        }
+        if (!cityRef.current?.value) {
+            addAlert({ title: "Erro!", text: "A cidade é obrigatório." })
+            return
+        }
+        if (!diariaRef.current?.value) {
+            addAlert({ title: "Erro!", text: "A diária é obrigatória." })
+            return
+        }
+        if (!descriptionRef.current?.value) {
+            addAlert({ title: "Erro!", text: "A descrição é obrigatória." })
+            return
+        }
+        if (!restrictionRef.current?.value) {
+            addAlert({ title: "Erro!", text: "A restrição é obrigatória." })
+            return
+        }
+        if (!shareRef.current?.value) {
+            addAlert({ title: "Erro!", text: "O compartilhamento é obrigatório." })
+            return
+        }
+
         setLoading(true)
         try {
             const { data } = await api.post<Home>("/home", {
                 user_id: user.id,
-                address: addressRef.current?.value.trim(),
-                city: cityRef.current?.value.trim(),
-                description: descriptionRef.current?.value.trim(),
-                cost_day: parseFloat(diariaRef.current?.value || '0'),
-                restriction_id: parseInt(restrictionRef.current?.value || "0"),
-                share_type_id: parseInt(shareRef.current?.value || "0"),
+                address: addressRef.current.value.trim(),
+                city: cityRef.current.value.trim(),
+                description: descriptionRef.current.value.trim(),
+                cost_day: parseFloat(diariaRef.current.value),
+                restriction_id: parseInt(restrictionRef.current.value),
+                share_type_id: parseInt(shareRef.current.value),
             })
             
             const form = new FormData()

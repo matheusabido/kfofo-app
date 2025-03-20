@@ -32,6 +32,17 @@ export default function ProfilePage() {
 		refetchOnWindowFocus: false,
 	})
 
+    const { data: bookings, isError: isErrorBookings } = useQuery({
+		queryKey: ["booking", user?.id],
+		queryFn: async () => {
+			if (!user) return await Promise.reject()
+			return (await api.get<Paginate<Home>>(`/bookings`)).data
+		},
+		staleTime: 5 * 60 * 1000,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+	})
+
     const [loading, setLoading] = useState(false)
     const nameRef = useRef<HTMLInputElement>(null)
     const emailRef = useRef<HTMLInputElement>(null)
@@ -69,8 +80,8 @@ export default function ProfilePage() {
     }
 
     useEffect(() => {
-        if (isError) addAlert({ title: "Erro!", text: "Não foi possível buscar as informações." })
-    }, [addAlert, isError])
+        if (isError || isErrorBookings) addAlert({ title: "Erro!", text: "Não foi possível buscar as informações." })
+    }, [addAlert, isError, isErrorBookings])
 
     return <>
         <Header />

@@ -17,7 +17,7 @@ import { useAlert } from "@/providers/AlertContext"
 
 export default function HomePage() {
     return <Suspense fallback={<Flex justify="center" mt={4}><Spinner color="blue" /></Flex>}>
-			<Page />
+		<Page />
     </Suspense>
 }
 
@@ -105,7 +105,7 @@ function Page() {
 						{utensils?.map((c) => <Badge color="white" p={2} px={4} bgColor="blue.500" key={`ut-${c.id}`}>{c.name}</Badge>)}
 					</Flex>
 				</Box>
-				<Button bgColor="blue.500" _hover={{bgColor: "blue.600"}} px={4}><FaCheck /> Reservar</Button>
+				<Button bgColor="blue.500" _hover={{bgColor: "blue.600"}} px={4} onClick={() => navigation.push(`/booking?id=${id}`)}><FaCheck /> Reservar</Button>
 			</Flex>
 		</Flex>
 	</>
