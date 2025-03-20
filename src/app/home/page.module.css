@@ -1,0 +1,10 @@
+.info {
+    display: flex;
+}
+
+@media (max-width: 900px) {
+    .info {
+        align-items: center;
+        flex-direction: column;
+    }
+}
