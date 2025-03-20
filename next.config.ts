@@ -7,8 +7,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
+        protocol: 'https',
+        hostname: 'kfofo-api-production.up.railway.app',
         port: '8080',
         pathname: '/home/picture'
       }
