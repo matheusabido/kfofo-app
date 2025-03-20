@@ -33,7 +33,6 @@ function Page() {
 			if (!id) return await Promise.reject()
 			return (await api.get<Home>(`/home/${id}`)).data
 		},
-		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
 
@@ -43,7 +42,6 @@ function Page() {
 			if (!id) return await Promise.reject()
 			return (await api.get<Utensil[]>(`/utensils?home_id=${id}`)).data
 		},
-		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
 
@@ -63,7 +61,7 @@ function Page() {
 		<Flex className={styles.info} gap={4} w="90vw" maxWidth="1600px" m="1rem auto">
 			<Box>
 				<Box shadow="md" rounded="lg" w="90vw" maxW="400px">
-					{data 
+					{data?.picture_path
 						? <Image style={{width: "100%", objectFit: "cover", borderRadius: "inherit"}} width={400} height={400} src={`${process.env.NEXT_PUBLIC_API_URL}/home/picture?path=${encodeURIComponent(data.picture_path)}`} alt="Home picture" />
 						: <Skeleton height="10rem" />}
 				</Box>

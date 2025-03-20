@@ -87,8 +87,7 @@ export default function CadastrarHome() {
 
             addAlert({ title: "Sucesso!", text: "Casa cadastrada com sucesso!", variant: "success" })
             navigation.replace("/profile")
-        } catch(err) {
-            console.log(err)
+        } catch {
             addAlert({ title: "Erro!", text: "Não foi possível cadastrar a casa! Configura seus dados e tente novamente." })
             setLoading(false)
         }

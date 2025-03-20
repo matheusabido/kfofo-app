@@ -56,7 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         api.interceptors.request.clear()
         if (user?.token) api.interceptors.request.use((r) => {
-            console.log(`Bearer ${user.token}`)
             r.headers["Authorization"] = `Bearer ${user.token}`
             return r
         })

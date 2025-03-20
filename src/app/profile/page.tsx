@@ -27,7 +27,6 @@ export default function ProfilePage() {
 			if (!user) return await Promise.reject()
 			return (await api.get<Paginate<Home>>(`/homes?user=${user.id}`)).data
 		},
-		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
 
@@ -37,7 +36,6 @@ export default function ProfilePage() {
 			if (!user) return await Promise.reject()
 			return (await api.get<Booking[]>(`/bookings`)).data
 		},
-		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 	})
 
@@ -169,7 +167,7 @@ export default function ProfilePage() {
                             </Link>
                         </Flex>
                     )}
-                    {data?.data.map((c) =>
+                    {data?.data?.map((c) =>
                         <Flex key={c.id} w="15rem" bgColor="white" rounded="lg" shadow="md" gap={4} justify="center" align="start" flexDir="column">
                             <Image style={{width: "100%", height: "80%", objectFit: "cover", borderRadius: "inherit"}} width={400} height={400} src={`${process.env.NEXT_PUBLIC_API_URL}/home/picture?path=${encodeURIComponent(c.picture_path)}`} alt="Home picture" />
                             <Flex w="100%" p={2} flexDir="column" gap={2}>
