@@ -162,7 +162,7 @@ export default function ProfilePage() {
                         <Flex w="15rem" h="15rem" bgColor="gray.200" rounded="lg" shadow="md" gap={4} p={4} justify="center" align="start" flexDir="column">
                             <Text color="gray.800">Você ainda não cadastrou nenhuma casa. Que tal cadastrar uma agora?</Text>
                             <Link href="/">
-                                <Flex bgColor="blue.500" color="white" p={2} px={4} rounded="sm" align="center" gap={2} transition="all" _hover={{bgColor: "blue.600"}}>
+                                <Flex onClick={() => navigation.push("/home/cadastrar")} bgColor="blue.500" color="white" p={2} px={4} rounded="sm" align="center" gap={2} transition="all" _hover={{bgColor: "blue.600"}}>
                                     <FaArrowRight />
                                     Cadastrar
                                 </Flex>
